@@ -2,10 +2,10 @@
     <a href="https://pypi.python.org/pypi/ChatNPM">
         <img src="https://img.shields.io/pypi/v/ChatNPM.svg" alt="PyPI version" />
     </a>
-    <a href="https://github.com/OWNER/REPO/actions/workflows/ci.yml">
-        <img src="https://github.com/OWNER/REPO/actions/workflows/ci.yml/badge.svg" alt="Tests" />
+    <a href="https://github.com/ChatArch/ChatNPM/actions/workflows/ci.yml">
+        <img src="https://github.com/ChatArch/ChatNPM/actions/workflows/ci.yml/badge.svg" alt="Tests" />
     </a>
-    <a href="https://OWNER.github.io/REPO">
+    <a href="https://chatarch.github.io/ChatNPM">
         <img src="https://img.shields.io/badge/docs-mkdocs-blue.svg" alt="Documentation" />
     </a>
 </div>
@@ -24,13 +24,35 @@ ChatNPM: ChatArch npm registry and package maintenance helper
 ```bash
 pip install -e ".[dev]"
 chatnpm hello ChatArch
+chatnpm --tree
+chatnpm package inspect npm --format json
+chatnpm trusted audit . --format json
 python -m pytest -q
 python -m build
 ```
 
+## Read-only npm publishing metadata inspection
+
+`chatnpm package inspect <package>` reads the public npm registry packument and prints a safe summary:
+
+- package / version / scope
+- public maintainer count and names from registry metadata
+- repository and safe `publishConfig` summary
+- dist integrity/signature/attestation presence
+- provenance evidence when `dist.attestations` is present
+- local GitHub Actions evidence for npm OIDC / `npm publish --provenance` through `chatnpm trusted audit`
+
+The public npm registry does not expose a PyPI-style Trusted Publisher settings table. ChatNPM therefore reports:
+
+```text
+Trusted Publishing settings: not exposed by public npm registry
+```
+
+That is not a failure and it is not a claim that Trusted Publishing is absent. It means public readback can verify registry provenance/attestation evidence, but cannot read npm account/package trusted-publishing settings.
+
 ## CLI Contract
 
-This template depends on `chatstyle>=0.1.0` and `chatenv>=0.1.1`. New commands should prefer:
+This package currently depends on `chatstyle>=0.1.0,<0.2.0`; it does not keep a `chatenv` runtime dependency until ChatEnv integration is actually used. New commands should prefer:
 
 - `CommandSchema` / `CommandField` for inputs.
 - `add_interactive_option()` for the shared `-i/-I` switch.
