@@ -1,6 +1,6 @@
 site_name: ChatNPM 文档
-site_url: https://OWNER.github.io/REPO
-repo_url: https://github.com/OWNER/REPO
+site_url: https://chatarch.github.io/ChatNPM
+repo_url: https://github.com/ChatArch/ChatNPM
 theme:
   name: material
   language: zh
