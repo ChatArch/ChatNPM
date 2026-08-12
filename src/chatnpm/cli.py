@@ -5,32 +5,86 @@ from pathlib import Path
 from typing import Any
 
 import click
-from chatstyle import (
-    CommandField,
-    CommandSchema,
-    add_interactive_option,
-    render_success,
-    resolve_command_inputs,
-)
 
 from chatnpm import __version__
 from chatnpm.registry import DEFAULT_REGISTRY, inspect_package
 from chatnpm.trusted import audit_trusted_publishing_repo
 
 
-HELLO_SCHEMA = CommandSchema(
-    name="hello",
-    fields=(CommandField("name", prompt="name", required=True),),
-)
+def _purpose(command: click.Command) -> str:
+    """Return a compact one-line purpose for a Click command."""
+
+    help_text = command.help or command.short_help or ""
+    return " ".join(help_text.strip().split()).rstrip(".") or "Run this command"
 
 
-TREE_TEXT = """chatnpm
-├── hello
-├── package
-│   └── inspect
-└── trusted
-    └── audit
-""".rstrip()
+def _option_token(option: click.Option) -> str:
+    long_name = next((opt for opt in option.opts if opt.startswith("--")), option.opts[-1])
+    if option.is_bool_flag or option.is_flag:
+        return long_name
+    if isinstance(option.type, click.Choice):
+        metavar = "|".join(str(choice) for choice in option.type.choices)
+    else:
+        metavar = (option.metavar or option.name or "VALUE").upper().replace("_", "-")
+    token = f"{long_name} {metavar}"
+    if option.required:
+        return token
+    return f"[{token}]"
+
+
+def _argument_token(argument: click.Argument) -> str:
+    name = argument.name.upper().replace("_", "-")
+    if argument.nargs == -1:
+        name = f"{name}..."
+    if not argument.required:
+        return f"[{name}]"
+    return name
+
+
+def _command_signature(command: click.Command) -> str:
+    tokens: list[str] = []
+    for param in command.params:
+        if isinstance(param, click.Argument):
+            tokens.append(_argument_token(param))
+        elif isinstance(param, click.Option):
+            if param.name in {"help"}:
+                continue
+            tokens.append(_option_token(param))
+    return " ".join(tokens)
+
+
+def _tree_lines(command: click.Command, name: str, prefix: str = "") -> list[str]:
+    lines: list[str] = []
+    if isinstance(command, click.Group):
+        visible_commands = [(key, cmd) for key, cmd in command.commands.items() if not cmd.hidden]
+        for index, (child_name, child) in enumerate(visible_commands):
+            last = index == len(visible_commands) - 1
+            connector = "└── " if last else "├── "
+            child_prefix = "    " if last else "│   "
+            signature = _command_signature(child)
+            label = f"{child_name} {signature}".rstrip()
+            lines.append(f"{prefix}{connector}{label}  # {_purpose(child)}.")
+            lines.extend(_tree_lines(child, child_name, prefix + child_prefix))
+    return lines
+
+
+def render_command_tree(command: click.Command, prog_name: str = "chatnpm") -> str:
+    """Render the public command tree from the registered Click surface."""
+
+    lines = [f"{prog_name}  # {_purpose(command)}."]
+    lines.extend(
+        [
+            "├── --help  # Show this help message.",
+            "├── --version  # Show the installed package version.",
+            "├── --tree  # Print the registered command tree.",
+        ]
+    )
+    child_lines = _tree_lines(command, prog_name)
+    if child_lines:
+        # The top-level pseudo-options above are siblings of the real command groups.
+        # Keep their branches open by converting the first real child connector if needed.
+        lines.extend(child_lines)
+    return "\n".join(lines)
 
 
 @click.group(invoke_without_command=True)
@@ -38,29 +92,14 @@ TREE_TEXT = """chatnpm
 @click.option("--tree", is_flag=True, help="Print the command tree and exit.")
 @click.pass_context
 def main(ctx: click.Context, tree: bool) -> None:
-    """chatnpm command line interface."""
+    """ChatArch npm registry and publishing-evidence helper."""
 
     if tree:
-        click.echo(TREE_TEXT)
+        click.echo(render_command_tree(ctx.command, "chatnpm"))
         ctx.exit(0)
     if ctx.invoked_subcommand is None:
         click.echo(ctx.get_help())
         ctx.exit(0)
-
-
-@main.command()
-@click.argument("name", required=False)
-@add_interactive_option
-def hello(name: str | None, interactive: bool | None) -> None:
-    """Print a greeting with ChatStyle-backed input resolution."""
-
-    values = resolve_command_inputs(
-        schema=HELLO_SCHEMA,
-        provided={"name": name},
-        interactive=interactive,
-        usage="Usage: chatnpm hello [NAME]",
-    )
-    render_success(f"Hello, {values['name']}!")
 
 
 @main.group(name="package")

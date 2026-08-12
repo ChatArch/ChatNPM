@@ -2,20 +2,26 @@
 
 ## CLI Rules
 
-- Use `chatstyle>=0.1.0,<0.2.0` as the canonical CLI interaction runtime; add `chatenv` only when a command actually integrates ChatEnv profiles/config.
-- Prefer `CommandSchema`, `CommandField`, `add_interactive_option()`, and `resolve_command_inputs()` for new commands.
-- Missing required args should auto-enter interactive mode when recoverable.
-- `-i` forces interactive mode; `-I` disables prompting and must fail fast.
-- Prompt defaults must match actual execution defaults.
-- Sensitive values must stay masked in prompts and summaries.
+- Keep the public command surface aligned with the real Click registry; `chatnpm --tree` is the source of truth for docs, README snippets, and CLI tests.
+- Do not keep scaffold-only commands in the public CLI.
+- Add new runtime dependencies only when the command implementation actually imports and uses them.
+- Missing required arguments should fail clearly in non-interactive CLI usage unless the command explicitly implements an interactive flow.
+- Sensitive values must stay masked in prompts, summaries, logs, and tests.
 - Prefer lazy imports in CLI wiring and keep implementation imports local when possible.
 
 ## Docs and Tests
 
-- Use doc-first CLI testing.
-- Put real CLI coverage under `tests/cli-tests/`.
-- Put mock/fake CLI coverage under `tests/mock-cli-tests/`.
-- Keep `README.md`, `docs/`, and `CHANGELOG.md` in sync with user-facing changes.
+- Lock the public CLI surface with `tests/test_cli.py` and `chatnpm --tree` assertions.
+- Keep README, bilingual MkDocs docs, and CHANGELOG in sync with user-facing changes.
+- Keep MkDocs Material configured with `pymdownx.emoji` and Material `twemoji` / `to_svg` renderers.
+- Keep source docs and generated HTML/search output free of literal Material shorthand tokens.
+- Keep docs on the ChatArch public docs domain: `https://arch.gh.wzhecnu.cn/ChatNPM/`.
+
+## Packaging and Release
+
+- Use PyPI Trusted Publishing / OIDC for releases; do not add legacy PyPI token secrets.
+- Tag-triggered publish workflows must verify the tag matches the package version and that the tagged commit is reachable from the default branch.
+- Local release gates should run source tests, installed CLI smoke, `python -m build`, `twine check`, `mkdocs build --strict`, and the Material literal-token checker.
 
 ## Automation
 

@@ -5,30 +5,44 @@
     <a href="https://github.com/ChatArch/ChatNPM/actions/workflows/ci.yml">
         <img src="https://github.com/ChatArch/ChatNPM/actions/workflows/ci.yml/badge.svg" alt="Tests" />
     </a>
-    <a href="https://chatarch.github.io/ChatNPM">
+    <a href="https://arch.gh.wzhecnu.cn/ChatNPM/">
         <img src="https://img.shields.io/badge/docs-mkdocs-blue.svg" alt="Documentation" />
     </a>
 </div>
 
 <div align="center">
 
-[English](README.en.md) | [简体中文](README.md)
+[英文版](README.en.md) | [简体中文](README.md)
 </div>
 
 # ChatNPM
 
 ChatNPM: ChatArch npm registry and package maintenance helper
 
+文档：<https://arch.gh.wzhecnu.cn/ChatNPM/>
+
 ## 快速开始
 
 ```bash
-pip install -e ".[dev]"
-chatnpm hello ChatArch
+pip install chatnpm
 chatnpm --tree
 chatnpm package inspect npm --format json
 chatnpm trusted audit . --format json
 python -m pytest -q
 python -m build
+```
+
+## 真实 CLI 树
+
+```text
+chatnpm  # ChatArch npm registry and publishing-evidence helper.
+├── --help  # Show this help message.
+├── --version  # Show the installed package version.
+├── --tree  # Print the registered command tree.
+├── package  # Inspect npm package registry metadata.
+│   └── inspect PACKAGE [--version PACKAGE-VERSION] [--registry REGISTRY] [--format text|json]  # Read npm registry publisher/provenance metadata for PACKAGE.
+└── trusted  # Audit npm Trusted Publishing evidence.
+    └── audit [PATH] [--format text|json]  # Read local package/workflow evidence for npm Trusted Publishing.
 ```
 
 ## npm 发布元数据只读检查
@@ -52,20 +66,14 @@ Trusted Publishing settings: not exposed by public npm registry
 
 ## CLI 规范
 
-这个包当前运行时依赖 `chatstyle>=0.1.0,<0.2.0`；未使用 ChatEnv 时不引入 `chatenv` 运行时依赖。新的命令应优先使用：
-
-- `CommandSchema` / `CommandField` 描述输入。
-- `add_interactive_option()` 提供统一 `-i/-I`。
-- `resolve_command_inputs()` 统一缺参补问、默认值、TTY 与校验。
+这个包当前运行时只依赖 Click；新的命令应优先使用真实注册命令生成的 `chatnpm --tree` 作为文档与测试来源。
 
 ## 目录结构
 
 - `src/`：包源码
-- `tests/code-tests/`：代码测试和历史测试迁移
-- `tests/cli-tests/`：真实 CLI 测试，doc-first
-- `tests/mock-cli-tests/`：mock/fake CLI 测试，doc-first
-- `docs/`：长期维护文档，由 mkdocs 构建
+- `tests/`：CLI、registry、trusted publishing、docs/workflow contract 测试
+- `docs/`：长期维护文档，由 MkDocs Material + i18n 构建
 
 ## 开发说明
 
-扩展脚手架前，先阅读 `DEVELOP.md` 和 `AGENTS.md`。
+扩展前先阅读 `DEVELOP.md` 和 `AGENTS.md`。
