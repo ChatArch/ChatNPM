@@ -5,11 +5,16 @@ from click.testing import CliRunner
 from chatnpm.cli import main
 
 
-def test_hello_command_accepts_explicit_name():
-    result = CliRunner().invoke(main, ["hello", "ChatArch"])
+def test_scaffold_hello_command_is_not_public():
+    help_result = CliRunner().invoke(main, ["--help"])
+    tree_result = CliRunner().invoke(main, ["--tree"])
+    hello_result = CliRunner().invoke(main, ["hello", "ChatArch"])
 
-    assert result.exit_code == 0
-    assert "Hello, ChatArch!" in result.output
+    assert help_result.exit_code == 0, help_result.output
+    assert tree_result.exit_code == 0, tree_result.output
+    assert "hello" not in help_result.output.lower()
+    assert "hello" not in tree_result.output.lower()
+    assert hello_result.exit_code != 0
 
 
 def test_package_inspect_outputs_safe_json(monkeypatch):
@@ -99,16 +104,19 @@ def test_package_inspect_reports_invalid_registry_without_echoing_value():
     assert "Traceback" not in result.output
 
 
-def test_tree_lists_package_inspect_command():
+def test_tree_lists_registered_public_commands_with_purposes():
     result = CliRunner().invoke(main, ["--tree"])
 
     assert result.exit_code == 0, result.output
-    assert "chatnpm" in result.output
-    assert "package" in result.output
-    assert "inspect" in result.output
-    assert "trusted" in result.output
-    assert "audit" in result.output
-    assert "hello" in result.output
+    assert "chatnpm  # ChatArch npm registry and publishing-evidence helper." in result.output
+    assert "--help  # Show this help message." in result.output
+    assert "--version  # Show the installed package version." in result.output
+    assert "--tree  # Print the registered command tree." in result.output
+    assert "package  # Inspect npm package registry metadata." in result.output
+    assert "inspect PACKAGE" in result.output
+    assert "trusted  # Audit npm Trusted Publishing evidence." in result.output
+    assert "audit [PATH]" in result.output
+    assert "hello" not in result.output.lower()
 
 
 def test_trusted_audit_outputs_safe_json(monkeypatch, tmp_path):
@@ -159,4 +167,4 @@ def test_version_option_reports_package_version():
     result = CliRunner().invoke(main, ["--version"])
 
     assert result.exit_code == 0, result.output
-    assert "0.1.2" in result.output
+    assert "0.1.3" in result.output

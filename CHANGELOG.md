@@ -1,5 +1,21 @@
 # Changelog
 
+## 2026-08-12 - 0.1.3
+
+### Added
+
+- Add bilingual MkDocs Material + i18n docs on the ChatArch production docs domain.
+- Add CLI tree docs generated from the real Click command surface with purpose comments.
+- Add docs and workflow contract tests for ChatArch release gates.
+
+### Changed
+
+- Remove the public scaffold `hello` command from the runtime CLI surface and drop the now-unused ChatStyle runtime dependency.
+- Generate `chatnpm --tree` from the registered Click commands instead of maintaining a handwritten tree string.
+- Align CI with Python 3.10/3.11/3.12, installed CLI smoke checks, strict MkDocs build, and source tests.
+- Harden PyPI Trusted Publishing workflow with a tag/version check and default-branch ancestry guard without legacy PyPI token secrets.
+- Point README, package metadata, and docs to `https://arch.gh.wzhecnu.cn/ChatNPM/`.
+
 ## 2026-08-12 - 0.1.2
 
 ### Added
@@ -22,6 +38,6 @@
 
 - 准备 `0.1.1` 发版，用于验证 PyPI Trusted Publishing 免 token 发布流程。
 
-- 发布 workflow 改为显式 `v*` tag / `workflow_dispatch` 触发，使用 PyPI Trusted Publishing（`id-token: write` + `environment: pypi`），不再依赖仓库级 PyPI token secret。
+- 发布 workflow 改为显式 `v*` tag / `workflow_dispatch` 触发，使用 PyPI Trusted Publishing（`id-token: write`），不再依赖仓库级 PyPI token secret。
 
 ### Fixed

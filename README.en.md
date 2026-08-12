@@ -5,7 +5,7 @@
     <a href="https://github.com/ChatArch/ChatNPM/actions/workflows/ci.yml">
         <img src="https://github.com/ChatArch/ChatNPM/actions/workflows/ci.yml/badge.svg" alt="Tests" />
     </a>
-    <a href="https://chatarch.github.io/ChatNPM">
+    <a href="https://arch.gh.wzhecnu.cn/ChatNPM/">
         <img src="https://img.shields.io/badge/docs-mkdocs-blue.svg" alt="Documentation" />
     </a>
 </div>
@@ -19,16 +19,30 @@
 
 ChatNPM: ChatArch npm registry and package maintenance helper
 
+Documentation: <https://arch.gh.wzhecnu.cn/ChatNPM/>
+
 ## Quick Start
 
 ```bash
-pip install -e ".[dev]"
-chatnpm hello ChatArch
+pip install chatnpm
 chatnpm --tree
 chatnpm package inspect npm --format json
 chatnpm trusted audit . --format json
 python -m pytest -q
 python -m build
+```
+
+## Real CLI tree
+
+```text
+chatnpm  # ChatArch npm registry and publishing-evidence helper.
+├── --help  # Show this help message.
+├── --version  # Show the installed package version.
+├── --tree  # Print the registered command tree.
+├── package  # Inspect npm package registry metadata.
+│   └── inspect PACKAGE [--version PACKAGE-VERSION] [--registry REGISTRY] [--format text|json]  # Read npm registry publisher/provenance metadata for PACKAGE.
+└── trusted  # Audit npm Trusted Publishing evidence.
+    └── audit [PATH] [--format text|json]  # Read local package/workflow evidence for npm Trusted Publishing.
 ```
 
 ## Read-only npm publishing metadata inspection
@@ -52,20 +66,14 @@ That is not a failure and it is not a claim that Trusted Publishing is absent. I
 
 ## CLI Contract
 
-This package currently depends on `chatstyle>=0.1.0,<0.2.0`; it does not keep a `chatenv` runtime dependency until ChatEnv integration is actually used. New commands should prefer:
-
-- `CommandSchema` / `CommandField` for inputs.
-- `add_interactive_option()` for the shared `-i/-I` switch.
-- `resolve_command_inputs()` for missing args, defaults, TTY behavior, and validation.
+This package currently depends on Click only. New commands should treat the registered `chatnpm --tree` output as the source for docs and tests.
 
 ## Layout
 
 - `src/`: package source code
-- `tests/code-tests/`: code tests and migrated historical tests
-- `tests/cli-tests/`: real CLI tests, doc-first
-- `tests/mock-cli-tests/`: mock/fake CLI tests, doc-first
-- `docs/`: long-lived project docs built by mkdocs
+- `tests/`: CLI, registry, trusted publishing, docs/workflow contract tests
+- `docs/`: long-lived project docs built by MkDocs Material + i18n
 
 ## Development Notes
 
-See `DEVELOP.md` and `AGENTS.md` before expanding the scaffold.
+See `DEVELOP.md` and `AGENTS.md` before expanding the package.

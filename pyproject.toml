@@ -9,7 +9,7 @@ description = "ChatNPM: ChatArch npm registry and package maintenance helper"
 readme = "README.md"
 requires-python = ">=3.10"
 license = "MIT"
-dependencies = ["click>=8.0", "chatstyle>=0.1.0,<0.2.0"]
+dependencies = ["click>=8.0"]
 authors = [{name = "ChatArch", email = "1073853456@qq.com"}]
 keywords = ["chatnpm", "chatarch", "cli"]
 classifiers = [
@@ -17,12 +17,17 @@ classifiers = [
     "Operating System :: OS Independent",
 ]
 
+[project.urls]
+Homepage = "https://arch.gh.wzhecnu.cn/ChatNPM/"
+Documentation = "https://arch.gh.wzhecnu.cn/ChatNPM/"
+Repository = "https://github.com/ChatArch/ChatNPM"
+
 [project.scripts]
 chatnpm = "chatnpm.cli:main"
 
 [project.optional-dependencies]
 dev = ["build", "pytest", "twine"]
-docs = ["mkdocs>=1.6,<2.0", "mkdocs-material>=9.5,<9.7", "mike>=2.0,<3.0"]
+docs = ["mkdocs>=1.6,<2.0", "mkdocs-material>=9.5,<10.0", "mkdocs-static-i18n>=1.2,<2.0", "mike>=2.0,<3.0"]
 
 [tool.setuptools.dynamic]
 version = {attr = "chatnpm.__version__"}
