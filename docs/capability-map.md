@@ -25,6 +25,7 @@
 
 ```bash
 chatnpm --tree
+chatnpm --tree-brief
 chatnpm package inspect npm --format json
 chatnpm trusted audit . --format json
 ```

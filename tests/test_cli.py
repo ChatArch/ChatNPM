@@ -1,19 +1,26 @@
 import json
 
 from click.testing import CliRunner
+from chatstyle import render_click_tree
 
+from chatnpm import __version__
 from chatnpm.cli import main
 
 
 def test_scaffold_hello_command_is_not_public():
     help_result = CliRunner().invoke(main, ["--help"])
     tree_result = CliRunner().invoke(main, ["--tree"])
+    brief_result = CliRunner().invoke(main, ["--tree-brief"])
     hello_result = CliRunner().invoke(main, ["hello", "ChatArch"])
 
     assert help_result.exit_code == 0, help_result.output
     assert tree_result.exit_code == 0, tree_result.output
+    assert brief_result.exit_code == 0, brief_result.output
+    assert "--tree" in help_result.output
+    assert "--tree-brief" in help_result.output
     assert "hello" not in help_result.output.lower()
     assert "hello" not in tree_result.output.lower()
+    assert "hello" not in brief_result.output.lower()
     assert hello_result.exit_code != 0
 
 
@@ -104,19 +111,34 @@ def test_package_inspect_reports_invalid_registry_without_echoing_value():
     assert "Traceback" not in result.output
 
 
-def test_tree_lists_registered_public_commands_with_purposes():
+def test_tree_lists_registered_public_commands_with_signatures_and_purposes():
     result = CliRunner().invoke(main, ["--tree"])
 
     assert result.exit_code == 0, result.output
-    assert "chatnpm  # ChatArch npm registry and publishing-evidence helper." in result.output
-    assert "--help  # Show this help message." in result.output
-    assert "--version  # Show the installed package version." in result.output
-    assert "--tree  # Print the registered command tree." in result.output
-    assert "package  # Inspect npm package registry metadata." in result.output
-    assert "inspect PACKAGE" in result.output
-    assert "trusted  # Audit npm Trusted Publishing evidence." in result.output
+    assert result.output == render_click_tree(main, root_name="chatnpm") + "\n"
+    assert result.output.splitlines().count("chatnpm") == 1
+    assert "├── --tree-brief" in result.output
+    assert "package  # Inspect public npm registry metadata; read-only network access." in result.output
+    assert "inspect <PACKAGE>" in result.output
+    assert "sends one request and never outputs auth values" in result.output
+    assert "trusted  # Audit npm Trusted Publishing evidence; read-only filesystem access." in result.output
     assert "audit [PATH]" in result.output
+    assert "no account access or secret output" in result.output
     assert "hello" not in result.output.lower()
+
+
+def test_tree_brief_keeps_nodes_and_purposes_but_omits_signatures():
+    result = CliRunner().invoke(main, ["--tree-brief"])
+
+    assert result.exit_code == 0, result.output
+    assert result.output == render_click_tree(main, root_name="chatnpm", brief=True) + "\n"
+    assert result.output.splitlines().count("chatnpm") == 1
+    assert "├── --tree-brief" in result.output
+    assert "│   └── inspect  # Read public package metadata" in result.output
+    assert "    └── audit  # Read package/workflow evidence" in result.output
+    assert "inspect <PACKAGE>" not in result.output
+    assert "audit [PATH]" not in result.output
+    assert "--registry" not in result.output
 
 
 def test_trusted_audit_outputs_safe_json(monkeypatch, tmp_path):
@@ -167,4 +189,4 @@ def test_version_option_reports_package_version():
     result = CliRunner().invoke(main, ["--version"])
 
     assert result.exit_code == 0, result.output
-    assert "0.1.3" in result.output
+    assert result.output == f"chatnpm, version {__version__}\n"

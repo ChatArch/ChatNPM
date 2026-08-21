@@ -25,6 +25,7 @@ Reads a local project without accessing npm account settings or printing token v
 
 ```bash
 chatnpm --tree
+chatnpm --tree-brief
 chatnpm package inspect npm --format json
 chatnpm trusted audit . --format json
 ```

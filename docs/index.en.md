@@ -11,6 +11,7 @@ ChatNPM is ChatArch's read-only helper for npm registry metadata and npm publish
 ```bash
 pip install chatnpm
 chatnpm --tree
+chatnpm --tree-brief
 chatnpm package inspect npm --format json
 chatnpm trusted audit . --format json
 ```
@@ -23,6 +24,7 @@ chatnpm trusted audit . --format json
 
 ```bash
 chatnpm --tree
+chatnpm --tree-brief
 ```
 
 See [CLI Tree](cli-tree.md).

@@ -26,6 +26,7 @@ ChatNPM: ChatArch npm registry and package maintenance helper
 ```bash
 pip install chatnpm
 chatnpm --tree
+chatnpm --tree-brief
 chatnpm package inspect npm --format json
 chatnpm trusted audit . --format json
 python -m pytest -q
@@ -34,15 +35,18 @@ python -m build
 
 ## 真实 CLI 树
 
+`chatnpm --tree` 显示参数签名；`chatnpm --tree-brief` 保留相同节点和用途说明，但省略参数签名。两者均由 ChatStyle 从真实 Click 注册面生成。
+
 ```text
-chatnpm  # ChatArch npm registry and publishing-evidence helper.
-├── --help  # Show this help message.
-├── --version  # Show the installed package version.
-├── --tree  # Print the registered command tree.
-├── package  # Inspect npm package registry metadata.
-│   └── inspect PACKAGE [--version PACKAGE-VERSION] [--registry REGISTRY] [--format text|json]  # Read npm registry publisher/provenance metadata for PACKAGE.
-└── trusted  # Audit npm Trusted Publishing evidence.
-    └── audit [PATH] [--format text|json]  # Read local package/workflow evidence for npm Trusted Publishing.
+chatnpm
+├── --help  # Show this message and exit.
+├── --version  # Show the version and exit.
+├── --tree  # Print the registered CLI tree and exit.
+├── --tree-brief  # Print the registered CLI tree without parameter signatures and exit.
+├── package  # Inspect public npm registry metadata; read-only network access.
+│   └── inspect <PACKAGE> [--version PACKAGE-VERSION] [--registry REGISTRY] [--format OUTPUT-FORMAT]  # Read public package metadata; sends one request and never outputs auth values.
+└── trusted  # Audit npm Trusted Publishing evidence; read-only filesystem access.
+    └── audit [PATH] [--format OUTPUT-FORMAT]  # Read package/workflow evidence under PATH; no account access or secret output.
 ```
 
 ## npm 发布元数据只读检查
@@ -66,7 +70,7 @@ Trusted Publishing settings: not exposed by public npm registry
 
 ## CLI 规范
 
-这个包当前运行时只依赖 Click；新的命令应优先使用真实注册命令生成的 `chatnpm --tree` 作为文档与测试来源。
+这个包使用 `chatstyle>=0.2.0,<0.3.0` 的 `add_tree_option()` 生成完整和简洁命令树，不维护包内 renderer。ChatNPM 没有 env/profile/config 行为，因此不依赖 ChatEnv。
 
 ## 目录结构
 
