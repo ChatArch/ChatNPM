@@ -3,6 +3,16 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 
 
+def test_runtime_and_docs_dependencies_match_chatarch_cli_standard():
+    text = (ROOT / "pyproject.toml").read_text(encoding="utf-8")
+
+    assert '"chatstyle>=0.2.0,<0.3.0"' in text
+    assert '"click>=8.0,<9.0"' in text
+    assert '"mkdocs-material>=9.5,<9.7"' in text
+    assert "chatenv" not in text.lower()
+    assert "site/" in (ROOT / ".gitignore").read_text(encoding="utf-8").splitlines()
+
+
 def test_publish_workflow_uses_oidc_without_legacy_pypi_tokens():
     text = (ROOT / ".github/workflows/publish.yml").read_text(encoding="utf-8")
 
@@ -26,13 +36,17 @@ def test_publish_workflow_has_tag_version_and_default_branch_guard():
     assert ("git fetch origin master " + "--tags") not in text
 
 
-def test_ci_runs_python_matrix_and_installed_cli_smoke():
+def test_ci_runs_python_matrix_and_installed_and_wheel_cli_smoke():
     text = (ROOT / ".github/workflows/ci.yml").read_text(encoding="utf-8")
 
     assert "python-version: [\"3.10\", \"3.11\", \"3.12\"]" in text
     assert "python -m pytest -q" in text
     assert "chatnpm --version" in text
     assert "chatnpm --tree" in text
+    assert "chatnpm --tree-brief" in text
+    assert "python -m build" in text
+    assert "python -m twine check dist/*" in text
+    assert '"$RUNNER_TEMP/chatnpm-wheel/bin/python" -m pip install dist/*.whl' in text
     assert "mkdocs build --strict" in text
 
 

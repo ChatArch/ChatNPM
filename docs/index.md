@@ -11,6 +11,7 @@ ChatNPM 是 ChatArch 的 npm registry 与 npm 发布证据只读检查工具。
 ```bash
 pip install chatnpm
 chatnpm --tree
+chatnpm --tree-brief
 chatnpm package inspect npm --format json
 chatnpm trusted audit . --format json
 ```
@@ -23,6 +24,7 @@ chatnpm trusted audit . --format json
 
 ```bash
 chatnpm --tree
+chatnpm --tree-brief
 ```
 
 详见 [CLI 树](cli-tree.md)。

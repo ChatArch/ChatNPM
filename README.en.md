@@ -26,6 +26,7 @@ Documentation: <https://arch.gh.wzhecnu.cn/ChatNPM/>
 ```bash
 pip install chatnpm
 chatnpm --tree
+chatnpm --tree-brief
 chatnpm package inspect npm --format json
 chatnpm trusted audit . --format json
 python -m pytest -q
@@ -34,15 +35,18 @@ python -m build
 
 ## Real CLI tree
 
+`chatnpm --tree` includes parameter signatures. `chatnpm --tree-brief` preserves the same nodes and purposes without signatures. ChatStyle generates both views from the real Click registry.
+
 ```text
-chatnpm  # ChatArch npm registry and publishing-evidence helper.
-├── --help  # Show this help message.
-├── --version  # Show the installed package version.
-├── --tree  # Print the registered command tree.
-├── package  # Inspect npm package registry metadata.
-│   └── inspect PACKAGE [--version PACKAGE-VERSION] [--registry REGISTRY] [--format text|json]  # Read npm registry publisher/provenance metadata for PACKAGE.
-└── trusted  # Audit npm Trusted Publishing evidence.
-    └── audit [PATH] [--format text|json]  # Read local package/workflow evidence for npm Trusted Publishing.
+chatnpm
+├── --help  # Show this message and exit.
+├── --version  # Show the version and exit.
+├── --tree  # Print the registered CLI tree and exit.
+├── --tree-brief  # Print the registered CLI tree without parameter signatures and exit.
+├── package  # Inspect public npm registry metadata; read-only network access.
+│   └── inspect <PACKAGE> [--version PACKAGE-VERSION] [--registry REGISTRY] [--format OUTPUT-FORMAT]  # Read public package metadata; sends one request and never outputs auth values.
+└── trusted  # Audit npm Trusted Publishing evidence; read-only filesystem access.
+    └── audit [PATH] [--format OUTPUT-FORMAT]  # Read package/workflow evidence under PATH; no account access or secret output.
 ```
 
 ## Read-only npm publishing metadata inspection
@@ -66,7 +70,7 @@ That is not a failure and it is not a claim that Trusted Publishing is absent. I
 
 ## CLI Contract
 
-This package currently depends on Click only. New commands should treat the registered `chatnpm --tree` output as the source for docs and tests.
+This package uses `add_tree_option()` from `chatstyle>=0.2.0,<0.3.0` for full and brief registered trees instead of a package-local renderer. ChatNPM has no env/profile/config behavior, so it does not depend on ChatEnv.
 
 ## Layout
 

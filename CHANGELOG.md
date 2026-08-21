@@ -1,5 +1,18 @@
 # Changelog
 
+## 2026-08-22 - 0.1.4
+
+### Added
+
+- Add `chatnpm --tree-brief` for the registered CLI surface without parameter signatures.
+- Add installed editable and built-wheel CLI readbacks, distribution checks, and documentation drift tests to CI.
+
+### Changed
+
+- Replace the package-local tree renderer with ChatStyle `add_tree_option()` on the explicit `chatnpm` root.
+- Align runtime and documentation dependency bounds with the current ChatArch CLI package standard.
+- Document command side effects and secret-output boundaries in both registered tree views.
+
 ## 2026-08-12 - 0.1.3
 
 ### Added

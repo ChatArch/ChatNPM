@@ -1,16 +1,33 @@
 # CLI 树
 
-`chatnpm --tree` 从真实 Click 注册命令面生成，用来在本地 gate、CI 和发布 readback 中锁定公开接口。
+ChatNPM 使用共享的 `chatstyle.add_tree_option()` 从真实 Click 注册面生成命令树。`chatnpm --tree` 包含参数签名，`chatnpm --tree-brief` 保留相同节点和用途说明但省略签名。
+
+## 完整树
 
 ```text
-chatnpm  # ChatArch npm registry and publishing-evidence helper.
-├── --help  # Show this help message.
-├── --version  # Show the installed package version.
-├── --tree  # Print the registered command tree.
-├── package  # Inspect npm package registry metadata.
-│   └── inspect PACKAGE [--version PACKAGE-VERSION] [--registry REGISTRY] [--format text|json]  # Read npm registry publisher/provenance metadata for PACKAGE.
-└── trusted  # Audit npm Trusted Publishing evidence.
-    └── audit [PATH] [--format text|json]  # Read local package/workflow evidence for npm Trusted Publishing.
+chatnpm
+├── --help  # Show this message and exit.
+├── --version  # Show the version and exit.
+├── --tree  # Print the registered CLI tree and exit.
+├── --tree-brief  # Print the registered CLI tree without parameter signatures and exit.
+├── package  # Inspect public npm registry metadata; read-only network access.
+│   └── inspect <PACKAGE> [--version PACKAGE-VERSION] [--registry REGISTRY] [--format OUTPUT-FORMAT]  # Read public package metadata; sends one request and never outputs auth values.
+└── trusted  # Audit npm Trusted Publishing evidence; read-only filesystem access.
+    └── audit [PATH] [--format OUTPUT-FORMAT]  # Read package/workflow evidence under PATH; no account access or secret output.
+```
+
+## 简版树
+
+```text
+chatnpm
+├── --help  # Show this message and exit.
+├── --version  # Show the version and exit.
+├── --tree  # Print the registered CLI tree and exit.
+├── --tree-brief  # Print the registered CLI tree without parameter signatures and exit.
+├── package  # Inspect public npm registry metadata; read-only network access.
+│   └── inspect  # Read public package metadata; sends one request and never outputs auth values.
+└── trusted  # Audit npm Trusted Publishing evidence; read-only filesystem access.
+    └── audit  # Read package/workflow evidence under PATH; no account access or secret output.
 ```
 
 ## 验收命令
@@ -18,6 +35,7 @@ chatnpm  # ChatArch npm registry and publishing-evidence helper.
 ```bash
 chatnpm --version
 chatnpm --tree
+chatnpm --tree-brief
 chatnpm package inspect npm --format json
 chatnpm trusted audit . --format json
 ```
