@@ -118,6 +118,8 @@ def test_tree_lists_registered_public_commands_with_signatures_and_purposes():
     assert result.output == render_click_tree(main, root_name="chatnpm") + "\n"
     assert result.output.splitlines().count("chatnpm") == 1
     assert "├── --tree-brief" in result.output
+    assert "auth  # Parse npm authentication handoff prompts." in result.output
+    assert "parse-output [--format OUTPUT-FORMAT]" in result.output
     assert "package  # Inspect public npm registry metadata; read-only network access." in result.output
     assert "inspect <PACKAGE>" in result.output
     assert "sends one request and never outputs auth values" in result.output
@@ -134,6 +136,7 @@ def test_tree_brief_keeps_nodes_and_purposes_but_omits_signatures():
     assert result.output == render_click_tree(main, root_name="chatnpm", brief=True) + "\n"
     assert result.output.splitlines().count("chatnpm") == 1
     assert "├── --tree-brief" in result.output
+    assert "│   └── parse-output  # Parse npm CLI output from stdin into a card-handoff payload." in result.output
     assert "│   └── inspect  # Read public package metadata" in result.output
     assert "    └── audit  # Read package/workflow evidence" in result.output
     assert "inspect <PACKAGE>" not in result.output

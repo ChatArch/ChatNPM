@@ -47,6 +47,8 @@ def test_cli_tree_docs_exist_in_both_languages():
         text = path.read_text(encoding="utf-8")
         assert "chatstyle.add_tree_option()" in text
         assert "chatnpm" in text
+        assert "auth" in text
+        assert "parse-output" in text
         assert "package inspect" in text
         assert "trusted audit" in text
         assert "hello" not in text.lower()

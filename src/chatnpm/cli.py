@@ -8,6 +8,7 @@ import click
 from chatstyle import add_tree_option
 
 from chatnpm import __version__
+from chatnpm.auth_handoff import parse_npm_auth_handoff
 from chatnpm.registry import DEFAULT_REGISTRY, inspect_package
 from chatnpm.trusted import audit_trusted_publishing_repo
 
@@ -22,6 +23,34 @@ def main(ctx: click.Context) -> None:
     if ctx.invoked_subcommand is None:
         click.echo(ctx.get_help())
         ctx.exit(0)
+
+
+@main.group(name="auth")
+def auth_group() -> None:
+    """Parse npm authentication handoff prompts."""
+
+
+def _render_auth_handoff_text(result: dict[str, Any]) -> str:
+    return "\n".join(
+        [
+            f"Status: {result.get('status')}",
+            f"Login URL: {result.get('login_url') or '(none)'}",
+            f"OTP required: {'yes' if result.get('otp_required') else 'no'}",
+        ]
+    )
+
+
+@auth_group.command(name="parse-output")
+@click.option("--format", "output_format", type=click.Choice(["text", "json"]), default="text", show_default=True)
+def auth_parse_output(output_format: str) -> None:
+    """Parse npm CLI output from stdin into a card-handoff payload."""
+
+    raw_output = click.get_text_stream("stdin").read()
+    result = parse_npm_auth_handoff(raw_output)
+    if output_format == "json":
+        click.echo(json.dumps(result, ensure_ascii=False, sort_keys=True, indent=2))
+    else:
+        click.echo(_render_auth_handoff_text(result))
 
 
 @main.group(name="package")
