@@ -14,11 +14,14 @@ chatnpm --tree
 chatnpm --tree-brief
 chatnpm package inspect npm --format json
 chatnpm trusted audit . --format json
+printf '%s\n' 'Open https://www.npmjs.com/login/abc to use your security key' | chatnpm auth parse-output --format json
 ```
 
 ## 能力
 
 `chatnpm package inspect <package>` 只读取公开 npm registry metadata，输出 package、version、scope、maintainers、repository、安全 `publishConfig` 摘要、dist integrity/signature/attestation 和 provenance evidence。`chatnpm trusted audit` 只读本地 `package.json` 与 `.github/workflows/*.yml`，回报是否存在 `id-token: write`、`npm publish --provenance`、npm registry 设置与 token fallback 迹象；本地 `publishConfig` 同样只输出安全摘要，不原样回显未知或 auth-like 字段。
+
+`chatnpm auth parse-output` 从 npm CLI 输出里解析登录 URL 与 OTP 需求，输出结构化 JSON，供 Hermes/Feishu 等平台发认证卡片并等待用户点击完成。
 
 ## CLI 树
 

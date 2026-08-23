@@ -1,5 +1,13 @@
 # Changelog
 
+## 2026-08-22 - 0.1.5
+
+### Added
+
+- Add `chatnpm auth parse-output` to parse npm CLI login/security-key/OTP prompts into a platform-neutral handoff payload (`status`, `login_url`, `otp_required`).
+- Document the Hermes/Feishu card-handoff pattern: ChatNPM emits structured auth state; the host platform renders the card and resumes npm publish after user confirmation.
+
+
 ## 2026-08-22 - 0.1.4
 
 ### Added
